@@ -1,9 +1,31 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { PROJECT_ROOT_DIR } from '../dirs';
 
-const currentDir = path.dirname(fileURLToPath(import.meta.url));
-const docsDir = path.resolve(currentDir, '../docs');
+const DOCS_DIR = path.resolve(PROJECT_ROOT_DIR, 'src/docs');
+
+async function getAllFiles(dir: string): Promise<string[]> {
+  const files: string[] = [];
+
+  async function traverse(currentDir: string): Promise<void> {
+    const entries = await fs.readdir(currentDir, { withFileTypes: true });
+
+    for (const entry of entries) {
+      const fullPath = path.join(currentDir, entry.name);
+
+      if (entry.isDirectory()) {
+        await traverse(fullPath);
+      } else if (entry.isFile()) {
+        // Store relative path from DOCS_DIR
+        const relativePath = path.relative(DOCS_DIR, fullPath);
+        files.push(relativePath);
+      }
+    }
+  }
+
+  await traverse(dir);
+  return files;
+}
 
 export async function showDoc(input: string): Promise<void> {
   const query = input?.trim();
@@ -14,10 +36,10 @@ export async function showDoc(input: string): Promise<void> {
 
   let files: string[];
   try {
-    files = await fs.readdir(docsDir);
+    files = await getAllFiles(DOCS_DIR);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    throw new Error(`Unable to read docs directory at ${docsDir}: ${message}`);
+    throw new Error(`Unable to read docs directory at ${DOCS_DIR}: ${message}`);
   }
 
   const normalizedQuery = query.toLowerCase();
@@ -39,7 +61,7 @@ export async function showDoc(input: string): Promise<void> {
     throw new Error(`Multiple documents match "${query}": ${matches.join(', ')}.`);
   }
 
-  const docPath = path.join(docsDir, selectedFile);
+  const docPath = path.join(DOCS_DIR, selectedFile);
 
   let contents: string;
   try {
