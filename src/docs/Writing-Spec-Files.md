@@ -1,7 +1,7 @@
 
 # Writing Spec Files
 
-Every project using the flpipeline tools will have a top level ./agentspec directory
+Every project using the flpipeline tools will have a top level ./specs directory
 (create this directory for new projects).
 
 This contains a nested tree of MD files that describe how each feature should work.
@@ -26,7 +26,7 @@ Spec files serve as live documentation for the app's features. They are used:
 
 ## Spec file directory organization
 
-In the ./agentspec folder there may be subdirectories to help organize the .md files.
+In the ./specs folder there may be subdirectories to help organize the .md files.
 
 Each project may have a custom directory naming scheme that makes sense for the
 project.
