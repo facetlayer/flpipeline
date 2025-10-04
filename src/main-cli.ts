@@ -3,14 +3,15 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { showDoc } from './commands/showDoc.ts';
 import { startTask } from './commands/startTask.ts';
+import { runTaskInWorktreeCommand } from './commands/runTaskInWorktree.ts';
 
 async function main(): Promise<void> {
   const parser = yargs(hideBin(process.argv))
     .scriptName('flpipeline')
     .usage('$0 [options]')
-    .command('start <taskFiles..>', 'Create new worktrees from task markdown files', (yargs) => {
+    .command('start <taskNamesOrFiles..>', 'Create new worktrees from task markdown files', (yargs) => {
       return yargs.positional('taskFiles', {
-        describe: 'Paths to the markdown task definition files',
+        describe: 'Branch name or paths to markdown task definition file(s)',
         type: 'string',
         array: true,
         demandOption: true
@@ -25,10 +26,13 @@ async function main(): Promise<void> {
       });
     }, async (argv) => {
       await startTask({
-        taskFiles: argv.taskFiles as string[],
+        taskFiles: argv.taskNamesOrFiles as string[],
         branchName: argv['branch-name'] as string | undefined,
         fromBranch: argv['from-branch'] as string | undefined
       });
+    })
+    .command('run-task-in-worktree', 'Run task in current worktree with Claude', () => {}, async () => {
+      await runTaskInWorktreeCommand();
     })
     .option('show-doc', {
       describe: 'Display documentation from src/docs by name or substring',

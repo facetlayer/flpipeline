@@ -2,8 +2,8 @@
 
 import yargs from 'yargs';
 import { execSync } from 'child_process';
-import { homedir } from 'os';
 import { join } from 'path';
+import { getLocalConfigs } from '../config/getLocalConfigs.js';
 
 interface CreateWorktreeOptions {
     branchName: string;
@@ -38,8 +38,10 @@ export function createWorktree(branchName: string, fromBranch?: string): string 
     console.log(`Creating branch '${branchName}' from ${baseBranch}...`);
     execSync(`git branch ${branchName} ${baseBranch}`, { stdio: 'inherit' });
 
-    const worktreePath = join(homedir(), 'work', branchName);
-    
+    const config = getLocalConfigs();
+    const worktreeRootDir = config.worktreeRootDir!;
+    const worktreePath = join(worktreeRootDir, branchName);
+
     execSync(`git worktree add "${worktreePath}" ${branchName}`, { stdio: 'inherit' });
 
     console.log(`Setting up remote branch '${branchName}'...`);

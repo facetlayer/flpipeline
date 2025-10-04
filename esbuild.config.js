@@ -15,7 +15,9 @@ const commonConfig = {
     'fs',
     'path',
     'os',
-    'util'
+    'util',
+    'gray-matter',
+    'node-pty'
   ]
 };
 

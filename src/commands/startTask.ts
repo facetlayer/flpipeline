@@ -7,7 +7,7 @@ import { openITermWindow } from '../workflow/openItermWindow.ts';
 import * as Path from 'path';
 
 export interface StartTaskArgs {
-    taskFiles: string[];
+    taskFiles: string | string[];
     branchName?: string;
     fromBranch?: string;
 }
@@ -15,7 +15,6 @@ export interface StartTaskArgs {
 function readTaskFile(taskFile: string): { branchName?: string, content: string } {
     if (!existsSync(taskFile)) {
         // Treat the argument as a branch name and open editor
-        console.log(`📝 File '${taskFile}' not found. Treating as branch name and opening editor...`);
         const content = promptUserToWriteFile(taskFile);
         const { frontmatter, body } = parseFrontmatter(content);
         
@@ -54,49 +53,45 @@ function writeTaskInstructions(worktreePath: string, taskContent: string): void 
 }
 
 export async function startTask(args: StartTaskArgs): Promise<void> {
-    try {
-        // Validate we're on main branch before processing any files
-        validateCurrentBranch();
+    const taskFiles = Array.isArray(args.taskFiles) ? args.taskFiles : [args.taskFiles];
 
-        // If branch name override is provided but multiple files are given, warn the user
-        if (args.branchName && args.taskFiles.length > 1) {
-            console.warn('⚠️  Warning: --branch-name option ignored when processing multiple files');
-        }
+    // Validate we're on main branch before processing any files
+    validateCurrentBranch();
 
-        // Process each task file
-        for (const taskFile of args.taskFiles) {
-            console.log(`\n📝 Processing ${taskFile}...`);
-
-            // Read the task file
-            const task = readTaskFile(taskFile);
-
-            // Determine branch name (CLI override > frontmatter > filename)
-            // Only use CLI override if processing a single file
-            let baseBranchName = (args.taskFiles.length === 1 ? args.branchName : undefined) || task.branchName;
-            if (!baseBranchName) {
-                // Use filename without .md extension as fallback
-                const filename = taskFile.split('/').pop() || taskFile;
-                baseBranchName = filename.replace(/\.md$/i, '');
-            }
-
-            // Add date prefix
-            const datePrefix = generateDatePrefix();
-            const branchName = `${datePrefix}-${baseBranchName}`;
-
-            const worktreePath = createWorktree(branchName, args.fromBranch);
-            // setupNodeModules(worktreePath);
-            writeTaskInstructions(worktreePath, task.content);
-
-            const initialCommand = `cd '${worktreePath}' && pnpm install && tools/workflow/run-task-in-worktree.ts`;
-            openITermWindow({ initialCommand, windowName: branchName });
-
-            console.log(`✅ Worktree '${branchName}' created successfully at ${worktreePath}`);
-        }
-
-        console.log(`\n🎉 Successfully created ${args.taskFiles.length} worktree${args.taskFiles.length === 1 ? '' : 's'}`);
-
-    } catch (error: any) {
-        console.error('❌ Error:', error.message);
-        process.exit(1);
+    // If branch name override is provided but multiple files are given, warn the user
+    if (args.branchName && args.taskFiles.length > 1) {
+        console.warn('⚠️  Warning: --branch-name option ignored when processing multiple files');
     }
+
+    // Process each task file
+    for (const taskFile of taskFiles) {
+        console.log(`\n📝 Processing ${taskFile}...`);
+
+        // Read the task file
+        const task = readTaskFile(taskFile);
+
+        // Determine branch name (CLI override > frontmatter > filename)
+        // Only use CLI override if processing a single file
+        let baseBranchName = (args.taskFiles.length === 1 ? args.branchName : undefined) || task.branchName;
+        if (!baseBranchName) {
+            // Use filename without .md extension as fallback
+            const filename = taskFile.split('/').pop() || taskFile;
+            baseBranchName = filename.replace(/\.md$/i, '');
+        }
+
+        // Add date prefix
+        const datePrefix = generateDatePrefix();
+        const branchName = `${datePrefix}-${baseBranchName}`;
+
+        const worktreePath = createWorktree(branchName, args.fromBranch);
+        // setupNodeModules(worktreePath);
+        writeTaskInstructions(worktreePath, task.content);
+
+        const initialCommand = `cd '${worktreePath}' && pnpm install && tools/workflow/run-task-in-worktree.ts`;
+        openITermWindow({ initialCommand, windowName: branchName });
+
+        console.log(`✅ Worktree '${branchName}' created successfully at ${worktreePath}`);
+    }
+
+    console.log(`\n🎉 Successfully created ${args.taskFiles.length} worktree${args.taskFiles.length === 1 ? '' : 's'}`);
 }

@@ -5,7 +5,7 @@ import { join } from 'path';
 import { spawn, execSync } from 'child_process';
 import { runWrappedClaude } from './runWrappedClaude.ts';
 import { findRelevantDocsForTask } from '../project-rag/find-relevant-docs-for-task.ts';
-import { main as setupNewWorktree } from '../worktree/setup-new-worktree.ts';
+import { setupNewWorktree as setupNewWorktree } from '../worktree/setupNewWorktree.ts';
 
 const START_WORK_PROMPT =
     `Read your task instructions below.`
@@ -101,7 +101,7 @@ async function buildFullPrompt(): Promise<string> {
     return fullPrompt;
 }
 
-export async function main() {
+export async function runTaskInWorktree() {
     try {
         // Parse command line arguments
         const useAutotrust = process.argv.includes('--autotrust');
@@ -127,12 +127,4 @@ export async function main() {
         console.error('❌ Error:', error.message);
         process.exit(1);
     }
-}
-
-if (import.meta.url === `file://${process.argv[1]}`) {
-    main()
-        .catch(err => {
-            console.error(err);
-            process.exit(1);
-        });
 }
