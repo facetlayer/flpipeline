@@ -2,11 +2,34 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { showDoc } from './commands/showDoc.ts';
+import { startTask } from './commands/startTask.ts';
 
 async function main(): Promise<void> {
   const parser = yargs(hideBin(process.argv))
     .scriptName('flpipeline')
     .usage('$0 [options]')
+    .command('start <taskFiles..>', 'Create new worktrees from task markdown files', (yargs) => {
+      return yargs.positional('taskFiles', {
+        describe: 'Paths to the markdown task definition files',
+        type: 'string',
+        array: true,
+        demandOption: true
+      })
+      .option('branch-name', {
+        describe: 'Override the branch name from the markdown file (only works with single file)',
+        type: 'string'
+      })
+      .option('from-branch', {
+        describe: 'Base branch to create worktree from (defaults to origin/main)',
+        type: 'string'
+      });
+    }, async (argv) => {
+      await startTask({
+        taskFiles: argv.taskFiles as string[],
+        branchName: argv['branch-name'] as string | undefined,
+        fromBranch: argv['from-branch'] as string | undefined
+      });
+    })
     .option('show-doc', {
       describe: 'Display documentation from src/docs by name or substring',
       type: 'string',
@@ -29,7 +52,9 @@ async function main(): Promise<void> {
     return;
   }
 
-  parser.showHelp();
+  if (argv._.length === 0 && !docName) {
+    parser.showHelp();
+  }
 }
 
 main().catch((error) => {
