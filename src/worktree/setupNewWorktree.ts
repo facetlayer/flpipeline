@@ -6,6 +6,7 @@ import { join, resolve, relative } from 'path';
 import { runShellCommand } from '@facetlayer/subprocess-wrapper';
 import { assignNewPorts } from './uniquePortAssignment.js';
 import { getLocalConfigs } from '../config/getLocalConfigs.js';
+import { setupClaudeSettings } from './setupClaudeSettings.js';
 
 function runCommand(command: string, cwd?: string): string {
   try {
@@ -145,6 +146,8 @@ export async function setupNewWorktree() {
   await runSetupSteps(originalRepoPath);
 
   await assignNewPorts();
+
+  await setupClaudeSettings();
 
   console.log('Worktree preparation complete!');
 }

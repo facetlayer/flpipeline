@@ -87,7 +87,7 @@ export async function startTask(args: StartTaskArgs): Promise<void> {
         // setupNodeModules(worktreePath);
         writeTaskInstructions(worktreePath, task.content);
 
-        const initialCommand = `cd '${worktreePath}' && pnpm install && tools/workflow/run-task-in-worktree.ts`;
+        const initialCommand = `cd '${worktreePath}' && flpipeline run-task-in-worktree`;
         openITermWindow({ initialCommand, windowName: branchName });
 
         console.log(`✅ Worktree '${branchName}' created successfully at ${worktreePath}`);
