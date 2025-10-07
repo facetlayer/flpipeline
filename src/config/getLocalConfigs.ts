@@ -19,12 +19,14 @@ export function getLocalConfigs(startDir?: string): ProjectConfig {
 
         return {
             ...config,
-            worktreeRootDir: expandedWorktreeRootDir
+            worktreeRootDir: expandedWorktreeRootDir,
+            docsDbFilename: config.docsDbFilename || '.docs.db'
         };
     } catch (error) {
         // If config file not found, return defaults
         return {
-            worktreeRootDir: `${homedir()}/work`
+            worktreeRootDir: `${homedir()}/work`,
+            docsDbFilename: '.docs.db'
         };
     }
 }

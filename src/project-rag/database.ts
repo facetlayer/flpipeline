@@ -19,12 +19,9 @@ export interface DocumentEmbedding {
 
 export class DocSearchDatabase {
   private db: Database.Database;
-  
-  constructor(dbPath?: string) {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirnameESM = path.dirname(__filename);
-    const defaultPath = path.join(__dirnameESM, '..', 'docs.db');
-    this.db = new Database(dbPath || defaultPath);
+
+  constructor(dbPath: string) {
+    this.db = new Database(dbPath);
     this.initializeDatabase();
   }
 

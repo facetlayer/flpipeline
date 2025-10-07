@@ -4,6 +4,8 @@ import { hideBin } from 'yargs/helpers';
 import { showDoc } from './commands/showDoc.ts';
 import { startTask } from './commands/startTask.ts';
 import { runTaskInWorktreeCommand } from './commands/runTaskInWorktree.ts';
+import { searchDocs } from './commands/searchDocs.ts';
+import { indexDocs } from './commands/indexDocs.ts';
 
 async function main(): Promise<void> {
   const parser = yargs(hideBin(process.argv))
@@ -33,6 +35,42 @@ async function main(): Promise<void> {
     })
     .command('run-task-in-worktree', 'Run task in current worktree with Claude', () => {}, async () => {
       await runTaskInWorktreeCommand();
+    })
+    .command('index-docs', 'Index documentation files for RAG search', (yargs) => {
+      return yargs.option('path', {
+        alias: 'p',
+        describe: 'Path to documentation directory',
+        type: 'string'
+      });
+    }, async (argv) => {
+      await indexDocs({
+        docsPath: argv.path as string | undefined
+      });
+    })
+    .command('search-docs <query>', 'Search documentation using RAG', (yargs) => {
+      return yargs.positional('query', {
+        describe: 'Search query for documentation',
+        type: 'string',
+        demandOption: true
+      })
+      .option('limit', {
+        alias: 'l',
+        describe: 'Maximum number of results',
+        type: 'number',
+        default: 5
+      })
+      .option('similarity', {
+        alias: 's',
+        describe: 'Minimum similarity threshold',
+        type: 'number',
+        default: 0.6
+      });
+    }, async (argv) => {
+      await searchDocs({
+        query: argv.query as string,
+        limit: argv.limit as number,
+        similarity: argv.similarity as number
+      });
     })
     .option('show-doc', {
       describe: 'Display documentation from src/docs by name or substring',

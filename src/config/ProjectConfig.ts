@@ -20,6 +20,7 @@ export interface WorktreeSetupStep {
 
 export interface ProjectConfig {
   localStateDbFilename?: string;
+  docsDbFilename?: string;
   worktreeRootDir?: string;
   uniquePortAssignment?: UniquePortAssignmentConfig;
   worktreeSetupSteps?: WorktreeSetupStep[];

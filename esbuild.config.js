@@ -17,7 +17,8 @@ const commonConfig = {
     'os',
     'util',
     'gray-matter',
-    'node-pty'
+    'node-pty',
+    'sqlite-vec'
   ]
 };
 

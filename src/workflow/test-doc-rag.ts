@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 
-import { annotateInstructions } from './run-task-in-worktree.js';
+import { annotateInstructions } from './runTaskInWorktree.js';
 
 async function main() {
   const query = process.argv.slice(2).join(' ').trim();

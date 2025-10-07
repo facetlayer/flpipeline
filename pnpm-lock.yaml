@@ -23,6 +23,9 @@ importers:
       sqlite-vec:
         specifier: 0.1.7-alpha.2
         version: 0.1.7-alpha.2
+      sqlite-vec-darwin-arm64:
+        specifier: 0.1.7-alpha.2
+        version: 0.1.7-alpha.2
       yargs:
         specifier: 18.0.0
         version: 18.0.0
@@ -1726,8 +1729,7 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
-  sqlite-vec-darwin-arm64@0.1.7-alpha.2:
-    optional: true
+  sqlite-vec-darwin-arm64@0.1.7-alpha.2: {}
 
   sqlite-vec-darwin-x64@0.1.7-alpha.2:
     optional: true
