@@ -1,0 +1,59 @@
+{
+  "name": "@facetlayer/flpipeline",
+  "main": "dist/main-cli.js",
+  "type": "module",
+  "bin": {
+    "flpipeline": "./dist/main-cli.js"
+  },
+  "scripts": {
+    "test": "cd api && vitest run",
+    "typecheck": "tsc -p .",
+    "web:test": "cd web-functional-test && vitest run",
+    "test:watch": "cd api && vitest",
+    "build": "pnpm run build:esbuild",
+    "build:esbuild": "node esbuild.config.js"
+  },
+  "devDependencies": {
+    "@facetlayer/candle": "^0.7.0",
+    "@facetlayer/sqlite-wrapper": "^0.9.1",
+    "@facetlayer/streams": "^1.0.0",
+    "@facetlayer/subprocess-wrapper": "^1.1.0",
+    "@types/node": "24.1.0",
+    "@types/yargs": "17.0.33",
+    "esbuild": "0.25.9",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  },
+  "private": true,
+  "dependencies": {
+    "glob": "11.0.3",
+    "gray-matter": "4.0.3",
+    "node-pty": "1.0.0",
+    "ollama": "0.6.0",
+    "sqlite-vec": "0.1.7-alpha.2",
+    "sqlite-vec-darwin-arm64": "0.1.7-alpha.2",
+    "yargs": "18.0.0"
+  },
+  "packageManager": "pnpm@10.15.1",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "better-sqlite3",
+      "electron",
+      "electron-winstaller",
+      "esbuild",
+      "node-pty"
+    ],
+    "ignoredBuiltDependencies": [
+      "@scarf/scarf",
+      "@tailwindcss/oxide",
+      "core-js-pure",
+      "cpu-features",
+      "lzma-native",
+      "protobufjs",
+      "sharp",
+      "ssh2",
+      "unrs-resolver"
+    ]
+  }
+}
