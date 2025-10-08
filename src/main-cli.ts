@@ -6,6 +6,7 @@ import { startTask } from './commands/startTask.ts';
 import { runTaskInWorktreeCommand } from './commands/runTaskInWorktree.ts';
 import { searchDocs } from './commands/searchDocs.ts';
 import { indexDocs } from './commands/indexDocs.ts';
+import { closeWorktree } from './commands/closeWorktree.ts';
 
 async function main(): Promise<void> {
   const parser = yargs(hideBin(process.argv))
@@ -35,6 +36,9 @@ async function main(): Promise<void> {
     })
     .command('run-task-in-worktree', 'Run task in current worktree with Claude', () => {}, async () => {
       await runTaskInWorktreeCommand();
+    })
+    .command('close-worktree', 'Close any processes for this worktree', () => {}, async () => {
+      await closeWorktree();
     })
     .command('index-docs', 'Index documentation files for RAG search', (yargs) => {
       return yargs.option('path', {

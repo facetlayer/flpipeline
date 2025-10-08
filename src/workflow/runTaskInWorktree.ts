@@ -13,7 +13,7 @@ const START_WORK_PROMPT =
     + `When the task is finished, submit the change as a pull request. This project uses Github Actions. `
     + `All pull requests must pass all build checks in order to be merged. Check the build results after creating the PR.`
     + `\n\n`
-    + `After submitting the pull request, run ./tools/close-worktree.ts to close the locally running processes.`;
+    + `After submitting the pull request, run \`flpipeline close-worktree\` to close the locally running processes.`;
 
 function getCurrentBranch(): string {
     try {
@@ -42,7 +42,6 @@ async function loadTaskInstructions(): Promise<string> {
     
     return readFileSync(instructionsPath, 'utf8');
 }
-
 
 /**
  * Optionally augment the prompt with RAG-selected docs. Controlled by:

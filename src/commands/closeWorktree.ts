@@ -2,7 +2,7 @@
 
 import { execSync } from 'child_process';
 
-export async function main() {
+export async function closeWorktree() {
     try {
         console.log('Closing worktree processes...');
         execSync('candle kill', { 
@@ -14,12 +14,4 @@ export async function main() {
         console.error('❌ Error closing worktree processes:', error.message);
         process.exit(1);
     }
-}
-
-if (import.meta.url === `file://${process.argv[1]}`) {
-    main()
-        .catch(err => {
-            console.error(err);
-            process.exit(1);
-        });
 }
