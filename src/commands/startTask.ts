@@ -1,6 +1,6 @@
 import { execSync } from 'child_process';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
-import { createWorktree, } from '../worktree/create-worktree.ts';
+import { createWorktree, } from '../worktree/createWorktree.ts';
 import { parseFrontmatter } from '../utils/parseFrontmatter.ts';
 import { promptUserToWriteFile } from '../workflow/promptUserToWriteFile.ts';
 import { openITermWindow } from '../workflow/openItermWindow.ts';

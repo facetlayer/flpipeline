@@ -5,12 +5,13 @@ import { updateClaudeSettings } from '../utils/updateClaudeSettings.js';
  * These allow Claude to perform common development tasks without prompting.
  */
 const DEFAULT_CLAUDE_PERMISSIONS = [
-  'Bash(npm run build:*)',
   'Bash(git add:*)',
   'Bash(git commit:*)',
   'Bash(git push:*)',
   'Bash(gh pr create:*)',
-  'Bash(gh pr:*)'
+  'Bash(gh pr:*)',
+  'Bash(gh run view:*)',
+  'Bash(gh run list:*)',
 ];
 
 /**

@@ -8,12 +8,11 @@ import { findRelevantDocsForTask } from '../project-rag/find-relevant-docs-for-t
 import { setupNewWorktree as setupNewWorktree } from '../worktree/setupNewWorktree.ts';
 
 const START_WORK_PROMPT =
-    `Read your task instructions below.`
-    + `Before starting, review documentation in ./docs for anything relevant to what you're working on. `
+    `Read your task instructions below. `
     + `When the task is finished, submit the change as a pull request. This project uses Github Actions. `
-    + `All pull requests must pass all build checks in order to be merged. Check the build results after creating the PR.`
-    + `\n\n`
-    + `After submitting the pull request, run \`flpipeline close-worktree\` to close the locally running processes.`;
+    + `All pull requests must pass all build checks in order to be merged. Check the build results after creating the PR. `
+    + `After submitting the pull request, run \`flpipeline close-worktree\` to close the locally running processes.\n\n`
+    + `Task instructions:`;
 
 function getCurrentBranch(): string {
     try {

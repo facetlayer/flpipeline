@@ -83,7 +83,7 @@ async function main(): Promise<void> {
     })
     .alias('h', 'help')
     .help()
-    .strict(false)
+    .strict(true)
     .fail((msg, err) => {
       const error = err ?? new Error(msg);
       console.error(error.message);
