@@ -96,8 +96,8 @@ description: Nested hint in subdirectory
       patterns: [join(testDir, '*.md')]
     });
 
-    expect(listing).toContain('test-hint-1 - First test hint description');
-    expect(listing).toContain('test-hint-2 - Second test hint description');
+    expect(listing.some(h => h.name === 'test-hint-1' && h.description === 'First test hint description')).toBe(true);
+    expect(listing.some(h => h.name === 'test-hint-2' && h.description === 'Second test hint description')).toBe(true);
     expect(listing.length).toBeGreaterThan(0);
   });
 
@@ -107,7 +107,8 @@ description: Nested hint in subdirectory
     });
 
     expect(listing).toHaveLength(1);
-    expect(listing[0]).toContain('no-description - No description available');
+    expect(listing[0].name).toBe('no-description');
+    expect(listing[0].description).toBe('No description available');
   });
 
   it('should handle files with empty frontmatter', async () => {
@@ -116,7 +117,8 @@ description: Nested hint in subdirectory
     });
 
     expect(listing).toHaveLength(1);
-    expect(listing[0]).toContain('empty-frontmatter - No description available');
+    expect(listing[0].name).toBe('empty-frontmatter');
+    expect(listing[0].description).toBe('No description available');
   });
 
   it('should handle files with no frontmatter', async () => {
@@ -125,7 +127,8 @@ description: Nested hint in subdirectory
     });
 
     expect(listing).toHaveLength(1);
-    expect(listing[0]).toContain('no-frontmatter - No description available');
+    expect(listing[0].name).toBe('no-frontmatter');
+    expect(listing[0].description).toBe('No description available');
   });
 
   it('should return sorted listings', async () => {
@@ -133,9 +136,10 @@ description: Nested hint in subdirectory
       patterns: [join(testDir, '*.md')]
     });
 
-    // Check that the listing is sorted alphabetically
-    const sortedListing = [...listing].sort();
-    expect(listing).toEqual(sortedListing);
+    // Check that the listing is sorted alphabetically by name
+    const names = listing.map(h => h.name);
+    const sortedNames = [...names].sort();
+    expect(names).toEqual(sortedNames);
   });
 
   it('should support glob patterns with subdirectories', async () => {
@@ -144,7 +148,7 @@ description: Nested hint in subdirectory
     });
 
     // Should include files from subdirectories
-    expect(listing.some(item => item.includes('nested-hint'))).toBe(true);
+    expect(listing.some(h => h.name === 'nested-hint')).toBe(true);
     expect(listing.length).toBeGreaterThanOrEqual(6);
   });
 
@@ -157,8 +161,8 @@ description: Nested hint in subdirectory
     });
 
     expect(listing).toHaveLength(2);
-    expect(listing).toContain('test-hint-1 - First test hint description');
-    expect(listing).toContain('test-hint-2 - Second test hint description');
+    expect(listing.some(h => h.name === 'test-hint-1' && h.description === 'First test hint description')).toBe(true);
+    expect(listing.some(h => h.name === 'test-hint-2' && h.description === 'Second test hint description')).toBe(true);
   });
 
   it('should deduplicate files when patterns overlap', async () => {
@@ -170,7 +174,7 @@ description: Nested hint in subdirectory
     });
 
     // Count occurrences of test-hint-1
-    const count = listing.filter(item => item.includes('test-hint-1')).length;
+    const count = listing.filter(h => h.name === 'test-hint-1').length;
     expect(count).toBe(1);
   });
 
@@ -180,7 +184,7 @@ description: Nested hint in subdirectory
     });
 
     // Should not include the .txt file since we're only matching .md files
-    expect(listing.every(item => !item.includes('not-markdown'))).toBe(true);
+    expect(listing.every(h => h.name !== 'not-markdown')).toBe(true);
     // Verify we still have markdown files
     expect(listing.length).toBeGreaterThan(0);
   });
@@ -203,13 +207,34 @@ description: Nested hint in subdirectory
     expect(listing).toEqual([]);
   });
 
-  it('should format listing entries correctly', async () => {
+  it('should return HintInfo objects with correct structure', async () => {
     const listing = await getListing({
       patterns: [join(testDir, 'test-hint-1.md')]
     });
 
     expect(listing).toHaveLength(1);
-    // Format should be "filename - description"
-    expect(listing[0]).toMatch(/^test-hint-1 - .+$/);
+    expect(listing[0]).toHaveProperty('name', 'test-hint-1');
+    expect(listing[0]).toHaveProperty('description');
+    expect(typeof listing[0].description).toBe('string');
+  });
+
+  it('should extract relevant_for from frontmatter when present', async () => {
+    // Create a hint with relevant_for
+    writeFileSync(
+      join(testDir, 'with-relevant.md'),
+      `---
+description: Test hint
+relevant_for: Testing relevant_for extraction
+---
+Content`
+    );
+
+    const listing = await getListing({
+      patterns: [join(testDir, 'with-relevant.md')]
+    });
+
+    expect(listing).toHaveLength(1);
+    expect(listing[0].name).toBe('with-relevant');
+    expect(listing[0].relevant_for).toBe('Testing relevant_for extraction');
   });
 });

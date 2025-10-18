@@ -1,0 +1,7 @@
+{
+  "docsDbFilename": ".docs.db",
+  "llmProvider": {
+    "provider": "claude",
+    "model": "claude-3-5-haiku-20241022"
+  }
+}

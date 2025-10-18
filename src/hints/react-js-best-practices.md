@@ -1,5 +1,6 @@
 ---
 description: Best practices for writing React.js code
+relevant_for: Writing React.js code, working on React components, implementing React features, refactoring React code
 ---
 
 # React Best Practices

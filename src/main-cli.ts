@@ -7,6 +7,7 @@ import { runTaskInWorktreeCommand } from './commands/runTaskInWorktree.ts';
 import { searchDocs } from './commands/searchDocs.ts';
 import { indexDocs } from './commands/indexDocs.ts';
 import { closeWorktree } from './commands/closeWorktree.ts';
+import { searchHints } from './commands/searchHints.ts';
 
 async function main(): Promise<void> {
   const parser = yargs(hideBin(process.argv))
@@ -74,6 +75,44 @@ async function main(): Promise<void> {
         query: argv.query as string,
         limit: argv.limit as number,
         similarity: argv.similarity as number
+      });
+    })
+    .command('search-hints <query>', 'Search for relevant hint files using LLM', (yargs) => {
+      return yargs.positional('query', {
+        describe: 'Search query for hints',
+        type: 'string',
+        demandOption: true
+      })
+      .option('limit', {
+        alias: 'l',
+        describe: 'Maximum number of hints to return',
+        type: 'number',
+        default: 5
+      })
+      .option('model', {
+        alias: 'm',
+        describe: 'LLM model to use (e.g., llama2, llama3)',
+        type: 'string'
+      })
+      .option('temperature', {
+        alias: 't',
+        describe: 'Temperature for LLM generation (0.0-1.0)',
+        type: 'number',
+        default: 0.3
+      })
+      .option('show-content', {
+        alias: 'c',
+        describe: 'Display the full content of found hints',
+        type: 'boolean',
+        default: false
+      });
+    }, async (argv) => {
+      await searchHints({
+        query: argv.query as string,
+        limit: argv.limit as number,
+        model: argv.model as string | undefined,
+        temperature: argv.temperature as number,
+        showContent: argv['show-content'] as boolean
       });
     })
     .option('show-doc', {

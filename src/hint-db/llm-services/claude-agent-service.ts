@@ -1,9 +1,11 @@
+import Anthropic from '@anthropic-ai/sdk';
 import { LLMService, LLMResponse, LLMGenerateOptions } from '../llm-service.js';
+import { getApiKey } from '../../config/api-keys.js';
 
 /**
- * Configuration options for the Claude Agent SDK service
+ * Configuration options for the Claude service
  */
-export interface ClaudeAgentServiceConfig {
+export interface ClaudeServiceConfig {
   /**
    * Anthropic API key
    * Defaults to ANTHROPIC_API_KEY env var
@@ -12,71 +14,84 @@ export interface ClaudeAgentServiceConfig {
 
   /**
    * Default model to use if not specified in generate options
-   * Defaults to 'claude-sonnet-4-5-20250929'
+   * Defaults to 'claude-3-5-haiku-20241022'
    */
   defaultModel?: string;
 }
 
 /**
- * Claude Agent SDK LLM service implementation
- *
- * NOTE: This is a placeholder implementation for future use with the Claude Agent SDK.
- * To complete this implementation:
- * 1. Install: pnpm add @anthropic-ai/sdk
- * 2. Import Anthropic SDK
- * 3. Implement the generate method using the SDK's messages API
- *
- * For now, this will throw an error if used.
+ * Claude API LLM service implementation using Anthropic SDK
  */
-export class ClaudeAgentLLMService implements LLMService {
-  private apiKey: string;
+export class ClaudeLLMService implements LLMService {
+  private anthropic: Anthropic;
   private defaultModel: string;
 
-  constructor(config?: ClaudeAgentServiceConfig) {
-    this.apiKey = config?.apiKey || process.env.ANTHROPIC_API_KEY || '';
-    this.defaultModel = config?.defaultModel || 'claude-sonnet-4-5-20250929';
+  constructor(config?: ClaudeServiceConfig) {
+    const apiKey = config?.apiKey || getApiKey('ANTHROPIC_API_KEY') || '';
 
-    if (!this.apiKey) {
-      throw new Error('ANTHROPIC_API_KEY environment variable is required for Claude Agent service');
+    if (!apiKey) {
+      throw new Error(
+        'ANTHROPIC_API_KEY is required for Claude service. ' +
+        'Set it in .api-keys.json or as an environment variable.'
+      );
     }
+
+    this.anthropic = new Anthropic({ apiKey });
+    this.defaultModel = config?.defaultModel || 'claude-3-5-haiku-20241022';
   }
 
   async generate(prompt: string, options?: LLMGenerateOptions): Promise<LLMResponse> {
-    throw new Error(
-      'Claude Agent SDK service is not yet implemented. ' +
-      'Please install @anthropic-ai/sdk and implement this service, or use OllamaLLMService instead.'
-    );
-
-    // Future implementation will look something like:
-    /*
-    import Anthropic from '@anthropic-ai/sdk';
-
-    const anthropic = new Anthropic({ apiKey: this.apiKey });
     const model = options?.model || this.defaultModel;
     const temperature = options?.temperature ?? 0.3;
+    const maxTokens = options?.maxTokens || 1024;
 
-    const message = await anthropic.messages.create({
-      model,
-      max_tokens: options?.maxTokens || 1024,
-      temperature,
-      messages: [{ role: 'user', content: prompt }]
-    });
+    try {
+      const message = await this.anthropic.messages.create({
+        model,
+        max_tokens: maxTokens,
+        temperature,
+        messages: [{ role: 'user', content: prompt }]
+      });
 
-    return {
-      text: message.content[0].type === 'text' ? message.content[0].text : '',
-      metadata: {
-        model: message.model,
-        tokensUsed: message.usage.input_tokens + message.usage.output_tokens,
-      }
-    };
-    */
+      // Extract text from the response
+      const textContent = message.content.find(block => block.type === 'text');
+      const text = textContent && textContent.type === 'text' ? textContent.text : '';
+
+      return {
+        text,
+        metadata: {
+          model: message.model,
+          tokensUsed: message.usage.input_tokens + message.usage.output_tokens,
+          inputTokens: message.usage.input_tokens,
+          outputTokens: message.usage.output_tokens,
+        }
+      };
+    } catch (error) {
+      throw new Error(
+        `Claude API generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
   }
 
   getProviderName(): string {
-    return 'Claude Agent SDK';
+    return 'Claude';
   }
 
   async isAvailable(): Promise<boolean> {
-    return this.apiKey.length > 0;
+    try {
+      // Try a minimal API call to check availability
+      await this.anthropic.messages.create({
+        model: this.defaultModel,
+        max_tokens: 1,
+        messages: [{ role: 'user', content: 'test' }]
+      });
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 }
+
+// Export with both names for backward compatibility
+export { ClaudeLLMService as ClaudeAgentLLMService };
+export type { ClaudeServiceConfig as ClaudeAgentServiceConfig };

@@ -1,5 +1,6 @@
 ---
 description: How to set up a new Next.js web project
+relevant_for: Setting up a new Next.js project from scratch, initializing a Next.js application, creating a new Next.js project
 ---
 
 ## How to Set up a Next.js Web Project

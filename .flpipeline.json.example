@@ -1,0 +1,33 @@
+{
+  "$schema": "Configuration for flpipeline project",
+  "docsDbFilename": ".docs.db",
+  "localStateDbFilename": ".state.db",
+  "worktreeRootDir": "../worktrees",
+
+  "llmProvider": {
+    "$comment": "Configure the LLM provider for operations like hint search",
+    "provider": "ollama",
+    "host": "http://localhost:11434",
+    "model": "qwen2.5:0.5b"
+  },
+
+  "$examples": {
+    "ollamaProvider": {
+      "provider": "ollama",
+      "host": "http://localhost:11434",
+      "model": "llama2"
+    },
+    "claudeAgentProvider": {
+      "provider": "claude-agent",
+      "apiKey": "your-api-key-here",
+      "model": "claude-sonnet-4-5-20250929"
+    }
+  },
+
+  "$notes": [
+    "All paths are relative to the project root directory",
+    "CLI arguments will override configuration values",
+    "If llmProvider is not specified, defaults to Ollama with default settings",
+    "For Claude Agent SDK, you can also use ANTHROPIC_API_KEY env var instead of apiKey in config"
+  ]
+}

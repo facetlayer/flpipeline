@@ -16,17 +16,26 @@ export interface GetListingOptions {
 }
 
 /**
+ * Detailed hint information
+ */
+export interface HintInfo {
+  name: string;
+  description: string;
+  relevant_for?: string;
+}
+
+/**
  * Reads all markdown files matching the specified glob patterns and extracts their frontmatter
  * to create a listing of available hints.
  *
  * @param options - Configuration options for finding and listing hint files
- * @returns Array of strings containing the name and description of each hint file
+ * @returns Array of hint information objects
  */
-export async function getListing(options?: GetListingOptions): Promise<string[]> {
+export async function getListing(options?: GetListingOptions): Promise<HintInfo[]> {
   const defaultPatterns = [join(PROJECT_ROOT_DIR, 'src/hints/**/*.md')];
   const patterns = options?.patterns ?? defaultPatterns;
 
-  const listing: string[] = [];
+  const hintInfos: HintInfo[] = [];
   const processedFiles = new Set<string>();
 
   try {
@@ -51,9 +60,13 @@ export async function getListing(options?: GetListingOptions): Promise<string[]>
           // Extract name (from filename without extension) and description
           const name = basename(filePath, '.md');
           const description = data.description || 'No description available';
+          const relevant_for = data.relevant_for;
 
-          // Add to listing in format: "name - description"
-          listing.push(`${name} - ${description}`);
+          hintInfos.push({
+            name,
+            description,
+            ...(relevant_for && { relevant_for })
+          });
         } catch (error) {
           // If there's an error reading or parsing a specific file, log it and continue
           console.warn(`Warning: Could not process file ${filePath}:`, error);
@@ -62,12 +75,12 @@ export async function getListing(options?: GetListingOptions): Promise<string[]>
     }
 
     // Sort alphabetically by name
-    listing.sort();
+    hintInfos.sort((a, b) => a.name.localeCompare(b.name));
 
   } catch (error) {
     console.error(`Error processing glob patterns:`, error);
     throw error;
   }
 
-  return listing;
+  return hintInfos;
 }

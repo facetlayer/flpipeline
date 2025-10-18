@@ -18,10 +18,38 @@ export interface WorktreeSetupStep {
   copyFiles?: string[];
 }
 
+/**
+ * LLM provider configuration for Ollama
+ */
+export interface OllamaLLMConfig {
+  provider: 'ollama';
+  host?: string;
+  model?: string;
+}
+
+/**
+ * LLM provider configuration for Claude (Anthropic API)
+ */
+export interface ClaudeLLMConfig {
+  provider: 'claude' | 'claude-agent';
+  apiKey?: string;
+  model?: string;
+}
+
+/**
+ * Union type of all supported LLM configurations
+ */
+export type LLMProviderConfig = OllamaLLMConfig | ClaudeLLMConfig;
+
 export interface ProjectConfig {
   localStateDbFilename?: string;
   docsDbFilename?: string;
   worktreeRootDir?: string;
   uniquePortAssignment?: UniquePortAssignmentConfig;
   worktreeSetupSteps?: WorktreeSetupStep[];
+  /**
+   * LLM provider configuration for operations like hint search.
+   * If not specified, defaults to Ollama with default settings.
+   */
+  llmProvider?: LLMProviderConfig;
 }

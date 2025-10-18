@@ -4,4 +4,9 @@
  */
 
 export { OllamaLLMService, type OllamaServiceConfig } from './ollama-service.js';
-export { ClaudeAgentLLMService, type ClaudeAgentServiceConfig } from './claude-agent-service.js';
+export {
+  ClaudeLLMService,
+  ClaudeAgentLLMService,
+  type ClaudeServiceConfig,
+  type ClaudeAgentServiceConfig
+} from './claude-agent-service.js';

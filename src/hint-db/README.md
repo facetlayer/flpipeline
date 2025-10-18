@@ -8,8 +8,70 @@ This module provides functionality for managing and querying hint files using LL
 - **getRelevantHints**: Use an LLM to find the most relevant hints for a given query
 - **FoundHints**: Class for accessing and working with discovered hint files
 - **LLM Service Plugins**: Pluggable architecture for different LLM providers
+- **Project Configuration**: Configure LLM provider in `.flpipeline.json`
 
-## Usage
+## CLI Usage
+
+The easiest way to use hint search is through the CLI:
+
+```bash
+# Basic search (uses configuration from .flpipeline.json)
+flpipeline search-hints "How do I set up a Next.js project?"
+
+# Limit results
+flpipeline search-hints "React patterns" --limit 3
+
+# Override model from config
+flpipeline search-hints "TypeScript setup" --model "llama3"
+
+# Show full content
+flpipeline search-hints "Database patterns" --show-content
+
+# Adjust temperature
+flpipeline search-hints "Testing strategies" --temperature 0.5
+```
+
+## Project Configuration
+
+Configure the LLM provider in `.flpipeline.json`:
+
+```json
+{
+  "llmProvider": {
+    "provider": "ollama",
+    "host": "http://localhost:11434",
+    "model": "qwen2.5:0.5b"
+  }
+}
+```
+
+### Supported Providers
+
+#### Ollama
+```json
+{
+  "llmProvider": {
+    "provider": "ollama",
+    "host": "http://localhost:11434",
+    "model": "llama2"
+  }
+}
+```
+
+#### Claude Agent SDK
+```json
+{
+  "llmProvider": {
+    "provider": "claude-agent",
+    "apiKey": "sk-ant-...",
+    "model": "claude-sonnet-4-5-20250929"
+  }
+}
+```
+
+Note: For Claude, you can also set `ANTHROPIC_API_KEY` environment variable instead of putting the key in the config file.
+
+## Programmatic Usage
 
 ### Basic Usage with Default (Ollama)
 

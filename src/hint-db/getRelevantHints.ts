@@ -1,6 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { getListing, GetListingOptions } from './getListing.js';
+import { getListing, GetListingOptions, HintInfo } from './getListing.js';
 import { PROJECT_ROOT_DIR } from '../dirs.js';
 import { LLMService } from './llm-service.js';
 import { OllamaLLMService } from './llm-services/ollama-service.js';
@@ -101,20 +101,6 @@ export class FoundHints {
       .map(({ name, content }) => `# ${name}\n\n${content}`)
       .join(separator);
   }
-
-  /**
-   * Iterate over each hint
-   */
-  forEach(callback: (hintName: string, index: number) => void): void {
-    this.hintNames.forEach(callback);
-  }
-
-  /**
-   * Map over the hints
-   */
-  map<T>(callback: (hintName: string, index: number) => T): T[] {
-    return this.hintNames.map(callback);
-  }
 }
 
 /**
@@ -136,29 +122,38 @@ export async function getRelevantHints(
     maxHints = 5
   } = options || {};
 
-  // Fetch the listing of all hints
-  const listing = await getListing({ patterns });
+  // Fetch the detailed listing of all hints
+  const hintInfos = await getListing({ patterns });
 
-  if (listing.length === 0) {
+  if (hintInfos.length === 0) {
     return new FoundHints([]);
   }
 
+  // Format hints for the prompt
+  const formattedHints = hintInfos.map((info, idx) => {
+    let line = `${idx + 1}. ${info.name} - ${info.description}`;
+    if (info.relevant_for) {
+      line += `\n   Relevant for: ${info.relevant_for}`;
+    }
+    return line;
+  }).join('\n');
+
   // Construct the prompt for the LLM
-  const prompt = `You are analyzing a user's request to determine which hint files are most relevant.
+  const prompt = `You are a helpful assistant that selects the most relevant hint files for a user's request.
 
 Available hint files:
-${listing.map((item, idx) => `${idx + 1}. ${item}`).join('\n')}
+${formattedHints}
 
-User's request:
-${inputText}
+Your task:
+- Analyze the user's request and return ONLY the hints that are truly relevant
+- Pay close attention to the "Relevant for" field - this specifies when each hint should be used
+- Return 0-${maxHints} hints (fewer is better if others aren't relevant)
+- Match the user's task to the hint's "Relevant for" criteria
 
-Please analyze the user's request and select the ${maxHints} most relevant hint files from the list above.
-Consider the descriptions carefully and choose hints that would be most helpful for the user's specific request.
+User's request: ${inputText}
 
-Respond with ONLY a JSON array of hint file names (without the .md extension), like this:
-["hint-name-1", "hint-name-2", "hint-name-3"]
-
-Do not include any explanation or additional text - only the JSON array.`;
+Respond with ONLY a JSON array of hint file names (without the .md extension).
+Examples: ["hint-name-1", "hint-name-2"] or [] if none are relevant.`;
 
   try {
     // Send the prompt to the LLM service
@@ -186,15 +181,10 @@ Do not include any explanation or additional text - only the JSON array.`;
     }
 
     // Validate that all hint names exist in the listing
-    const availableHintNames = listing.map(item => item.split(' - ')[0]);
+    const availableHintNames = hintInfos.map(info => info.name);
     const validHintNames = hintNames.filter(name => availableHintNames.includes(name));
 
-    if (validHintNames.length === 0) {
-      console.warn('LLM returned no valid hint names, returning first available hints as fallback');
-      // Fallback: return first N hints
-      return new FoundHints(availableHintNames.slice(0, maxHints));
-    }
-
+    // Return only valid hints, or empty if none found
     return new FoundHints(validHintNames.slice(0, maxHints));
 
   } catch (error) {

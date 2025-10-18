@@ -151,11 +151,3 @@ export async function setupNewWorktree() {
 
   console.log('Worktree preparation complete!');
 }
-
-// Check if this script is being run directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-  setupNewWorktree().catch(error => {
-    console.error('Script failed:', error);
-    process.exit(1);
-  });
-}

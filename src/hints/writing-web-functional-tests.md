@@ -1,5 +1,6 @@
 ---
 description: Best practices for writing web functional tests
+relevant_for: Writing functional tests, creating browser automation tests, working with Playwright or similar web testing frameworks, debugging or fixing failing tests
 ---
 
 # Writing Web Functional Tests

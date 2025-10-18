@@ -1,5 +1,6 @@
 ---
 description: Guidelines for developing frontend web apps
+relevant_for: Setting up a new web project, initializing a web application, creating a static web project
 ---
 
 # Web Coding Guidelines

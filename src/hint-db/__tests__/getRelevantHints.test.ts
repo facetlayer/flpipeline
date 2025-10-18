@@ -96,19 +96,6 @@ description: Guide for Next.js projects
       expect(concatenated).toContain('# typescript-setup');
       expect(concatenated).toContain('---');
     });
-
-    it('should support forEach', () => {
-      const hints = new FoundHints(['hint1', 'hint2']);
-      const names: string[] = [];
-      hints.forEach(name => names.push(name));
-      expect(names).toEqual(['hint1', 'hint2']);
-    });
-
-    it('should support map', () => {
-      const hints = new FoundHints(['hint1', 'hint2']);
-      const upperNames = hints.map(name => name.toUpperCase());
-      expect(upperNames).toEqual(['HINT1', 'HINT2']);
-    });
   });
 
   describe('getRelevantHints function', () => {
@@ -184,7 +171,7 @@ description: Guide for Next.js projects
       expect(foundHints.getHintNames()).toContain('react-best-practices');
     });
 
-    it('should fallback to first hints when LLM returns no valid hints', async () => {
+    it('should return empty results when LLM returns no valid hints', async () => {
       const mockLLM = new MockLLMService('["nonexistent1", "nonexistent2"]');
       const foundHints = await getRelevantHints('test query', {
         patterns: [join(testDir, '*.md')],
@@ -192,9 +179,9 @@ description: Guide for Next.js projects
         maxHints: 2
       });
 
-      // Should fallback to first available hints
-      expect(foundHints.getCount()).toBe(2);
-      expect(foundHints.hasHints()).toBe(true);
+      // Should return empty when no valid hints found
+      expect(foundHints.getCount()).toBe(0);
+      expect(foundHints.hasHints()).toBe(false);
     });
 
     it('should throw error when LLM service fails', async () => {
