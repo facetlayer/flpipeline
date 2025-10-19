@@ -1,8 +1,7 @@
 import { getRelevantHints } from '../hint-db/getRelevantHints.js';
-import { join } from 'path';
-import { PROJECT_ROOT_DIR } from '../dirs.js';
 import { getLocalConfigs } from '../config/getLocalConfigs.js';
 import { createLLMServiceFromConfig, getDefaultModelFromConfig } from '../config/createLLMServiceFromConfig.js';
+import { getHintPatterns } from '../hint-db/getHintPatterns.js';
 
 export interface SearchHintsArgs {
   query: string;
@@ -30,7 +29,7 @@ export async function searchHints(args: SearchHintsArgs): Promise<void> {
 
   try {
     // Load project configuration
-    const config = getLocalConfigs(PROJECT_ROOT_DIR);
+    const config = getLocalConfigs(process.cwd());
 
     // Initialize the LLM service from configuration
     const llmService = createLLMServiceFromConfig(config.llmProvider);
@@ -47,9 +46,12 @@ export async function searchHints(args: SearchHintsArgs): Promise<void> {
       );
     }
 
+    // Get hint patterns (includes default + project-specific)
+    const patterns = getHintPatterns(config);
+
     // Get relevant hints
     const foundHints = await getRelevantHints(query, {
-      patterns: [join(PROJECT_ROOT_DIR, 'src/hints/**/*.md')],
+      patterns,
       llmService,
       maxHints: limit,
       temperature,

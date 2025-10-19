@@ -8,6 +8,7 @@ import { searchDocs } from './commands/searchDocs.ts';
 import { indexDocs } from './commands/indexDocs.ts';
 import { closeWorktree } from './commands/closeWorktree.ts';
 import { searchHints } from './commands/searchHints.ts';
+import { listHints } from './commands/listHints.ts';
 
 async function main(): Promise<void> {
   const parser = yargs(hideBin(process.argv))
@@ -113,6 +114,18 @@ async function main(): Promise<void> {
         model: argv.model as string | undefined,
         temperature: argv.temperature as number,
         showContent: argv['show-content'] as boolean
+      });
+    })
+    .command('list-hints', 'List all available hint files', (yargs) => {
+      return yargs.option('verbose', {
+        alias: 'v',
+        describe: 'Show descriptions and relevance criteria',
+        type: 'boolean',
+        default: false
+      });
+    }, async (argv) => {
+      await listHints({
+        verbose: argv.verbose as boolean
       });
     })
     .option('show-doc', {

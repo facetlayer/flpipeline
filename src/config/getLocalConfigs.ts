@@ -17,10 +17,16 @@ export function getLocalConfigs(startDir?: string): ProjectConfig {
             ? worktreeRootDir.replace('~', homedir())
             : worktreeRootDir;
 
+        // Expand ~ in hintPaths if present
+        const expandedHintPaths = config.hintPaths?.map(path =>
+            path.startsWith('~') ? path.replace('~', homedir()) : path
+        );
+
         return {
             ...config,
             worktreeRootDir: expandedWorktreeRootDir,
-            docsDbFilename: config.docsDbFilename || '.docs.db'
+            docsDbFilename: config.docsDbFilename || '.docs.db',
+            hintPaths: expandedHintPaths
         };
     } catch (error) {
         // If config file not found, return defaults

@@ -52,4 +52,10 @@ export interface ProjectConfig {
    * If not specified, defaults to Ollama with default settings.
    */
   llmProvider?: LLMProviderConfig;
+  /**
+   * Additional paths to search for hint files.
+   * These paths are combined with the default flpipeline hints.
+   * Supports ~ for home directory expansion.
+   */
+  hintPaths?: string[];
 }
