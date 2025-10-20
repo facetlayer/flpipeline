@@ -6,10 +6,8 @@
     "flpipeline": "./dist/main-cli.js"
   },
   "scripts": {
-    "test": "cd api && vitest run",
+    "test": "vitest run",
     "typecheck": "tsc -p .",
-    "web:test": "cd web-functional-test && vitest run",
-    "test:watch": "cd api && vitest",
     "build": "pnpm run typecheck && pnpm run build:esbuild",
     "build:esbuild": "node esbuild.config.js"
   },
