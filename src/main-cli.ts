@@ -9,6 +9,7 @@ import { indexDocs } from './commands/indexDocs.ts';
 import { closeWorktree } from './commands/closeWorktree.ts';
 import { searchHints } from './commands/searchHints.ts';
 import { listHints } from './commands/listHints.ts';
+import { showHints } from './commands/showHints.ts';
 
 async function main(): Promise<void> {
   const parser = yargs(hideBin(process.argv))
@@ -100,20 +101,13 @@ async function main(): Promise<void> {
         describe: 'Temperature for LLM generation (0.0-1.0)',
         type: 'number',
         default: 0.3
-      })
-      .option('show-content', {
-        alias: 'c',
-        describe: 'Display the full content of found hints',
-        type: 'boolean',
-        default: false
       });
     }, async (argv) => {
       await searchHints({
         query: argv.query as string,
         limit: argv.limit as number,
         model: argv.model as string | undefined,
-        temperature: argv.temperature as number,
-        showContent: argv['show-content'] as boolean
+        temperature: argv.temperature as number
       });
     })
     .command('list-hints', 'List all available hint files', (yargs) => {
@@ -127,6 +121,9 @@ async function main(): Promise<void> {
       await listHints({
         verbose: argv.verbose as boolean
       });
+    })
+    .command('show-hints', 'Display full content of all available hint files', () => {}, async () => {
+      await showHints();
     })
     .option('show-doc', {
       describe: 'Display documentation from src/docs by name or substring',

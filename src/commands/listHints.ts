@@ -47,6 +47,7 @@ export async function listHints(args?: ListHintsArgs): Promise<void> {
         console.log(`${index + 1}. ${hint.name}`);
       });
       console.log('\nUse --verbose to see descriptions and relevance criteria.');
+      console.log('Use "flpipeline show-hints" to see full content of all hints.');
     }
 
   } catch (error) {

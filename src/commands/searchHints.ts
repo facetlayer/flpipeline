@@ -8,7 +8,6 @@ export interface SearchHintsArgs {
   limit?: number;
   model?: string;
   temperature?: number;
-  showContent?: boolean;
 }
 
 /**
@@ -19,8 +18,7 @@ export async function searchHints(args: SearchHintsArgs): Promise<void> {
     query,
     limit = 5,
     model,
-    temperature = 0.3,
-    showContent = false
+    temperature = 0.3
   } = args;
 
   if (!query || query.trim().length === 0) {
@@ -71,27 +69,7 @@ export async function searchHints(args: SearchHintsArgs): Promise<void> {
       console.log(`${index + 1}. ${hintName}`);
     });
 
-    // Optionally show content
-    if (showContent) {
-      console.log('\n' + '='.repeat(80) + '\n');
-
-      hintNames.forEach((hintName, index) => {
-        if (index > 0) {
-          console.log('\n' + '-'.repeat(80) + '\n');
-        }
-
-        console.log(`Hint ${index + 1}: ${hintName}\n`);
-
-        try {
-          const content = foundHints.getHintContent(hintName);
-          console.log(content);
-        } catch (error) {
-          console.error(`Error reading hint content: ${error instanceof Error ? error.message : 'Unknown error'}`);
-        }
-      });
-    } else {
-      console.log('\nUse --show-content to display the full content of the hints.');
-    }
+    console.log('\nUse "flpipeline show-hints" to display the full content of all hints.');
 
   } catch (error) {
     if (error instanceof Error) {
