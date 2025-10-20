@@ -10,7 +10,7 @@
     "typecheck": "tsc -p .",
     "web:test": "cd web-functional-test && vitest run",
     "test:watch": "cd api && vitest",
-    "build": "pnpm run build:esbuild",
+    "build": "pnpm run typecheck && pnpm run build:esbuild",
     "build:esbuild": "node esbuild.config.js"
   },
   "devDependencies": {
@@ -22,7 +22,8 @@
     "@types/yargs": "17.0.33",
     "esbuild": "0.25.9",
     "tsx": "^4.20.3",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "3.2.4"
   },
   "private": true,
   "dependencies": {

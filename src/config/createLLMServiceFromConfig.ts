@@ -31,9 +31,9 @@ export function createLLMServiceFromConfig(config?: LLMProviderConfig): LLMServi
     });
   }
 
-  // Exhaustive check
-  const _exhaustive: never = config;
-  throw new Error(`Unknown LLM provider: ${(config as any).provider}`);
+  // Exhaustive check - this should never be reached
+  const _exhaustive: never = provider;
+  throw new Error(`Unknown LLM provider: ${provider}`);
 }
 
 /**

@@ -84,7 +84,7 @@ function extractTitle(content: string): string {
 }
 
 async function searchWithEmbeddings(query: string): Promise<SearchResult[]> {
-  const db = new DocSearchDatabase();
+  const db = new DocSearchDatabase('.flpipeline.docsearch.db');
   try {
     const embeddingService = new EmbeddingService();
     const searcher = new DocumentSearcher(db, embeddingService);
@@ -96,7 +96,7 @@ async function searchWithEmbeddings(query: string): Promise<SearchResult[]> {
 }
 
 async function searchWithDatabase(query: string): Promise<SearchResult[]> {
-  const db = new DocSearchDatabase();
+  const db = new DocSearchDatabase('.flpipeline.docsearch.db');
   try {
     const documents = db.getAllDocuments();
     const words = parseQuery(query);

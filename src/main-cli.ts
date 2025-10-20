@@ -110,7 +110,7 @@ async function main(): Promise<void> {
         temperature: argv.temperature as number
       });
     })
-    .command('list-hints', 'List all available hint files', (yargs) => {
+    .command('list-all-hints', 'List all available hint files', (yargs) => {
       return yargs.option('verbose', {
         alias: 'v',
         describe: 'Show descriptions and relevance criteria',
@@ -122,8 +122,36 @@ async function main(): Promise<void> {
         verbose: argv.verbose as boolean
       });
     })
-    .command('show-hints', 'Display full content of all available hint files', () => {}, async () => {
-      await showHints();
+    .command('show-hints <query>', 'Display full content of hint files matching search query', (yargs) => {
+      return yargs.positional('query', {
+        describe: 'Search query for hints',
+        type: 'string',
+        demandOption: true
+      })
+      .option('limit', {
+        alias: 'l',
+        describe: 'Maximum number of hints to return',
+        type: 'number',
+        default: 5
+      })
+      .option('model', {
+        alias: 'm',
+        describe: 'LLM model to use (e.g., llama2, llama3)',
+        type: 'string'
+      })
+      .option('temperature', {
+        alias: 't',
+        describe: 'Temperature for LLM generation (0.0-1.0)',
+        type: 'number',
+        default: 0.3
+      });
+    }, async (argv) => {
+      await showHints({
+        query: argv.query as string,
+        limit: argv.limit as number,
+        model: argv.model as string | undefined,
+        temperature: argv.temperature as number
+      });
     })
     .option('show-doc', {
       describe: 'Display documentation from src/docs by name or substring',

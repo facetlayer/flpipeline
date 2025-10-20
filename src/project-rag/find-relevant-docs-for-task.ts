@@ -70,7 +70,7 @@ async function lexicalFsFallback(search: RelevantDocsSearch): Promise<string[]> 
 
 export async function findRelevantDocsForTask(search: RelevantDocsSearch): Promise<string[]> {
     try {
-        const db = new DocSearchDatabase();
+        const db = new DocSearchDatabase('.flpipeline.docsearch.db');
         const embeddingService = new EmbeddingService();
         const searcher = new DocumentSearcher(db, embeddingService);
 
