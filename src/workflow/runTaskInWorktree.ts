@@ -4,7 +4,6 @@ import { readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { spawn, execSync } from 'child_process';
 import { runWrappedClaude } from './runWrappedClaude.ts';
-import { findRelevantDocsForTask } from '../project-rag/find-relevant-docs-for-task.ts';
 import { setupNewWorktree as setupNewWorktree } from '../worktree/setupNewWorktree.ts';
 
 const START_WORK_PROMPT =
@@ -42,23 +41,9 @@ async function loadTaskInstructions(): Promise<string> {
     return readFileSync(instructionsPath, 'utf8');
 }
 
-/**
- * Optionally augment the prompt with RAG-selected docs. Controlled by:
- * - CLI flag `--no-doc-rag`
- * - Env var `DISABLE_DOC_RAG=1`
- */
 export async function annotateInstructions(taskInstructions: string): Promise<string> {
-    const disabled = process.argv.includes('--no-doc-rag') || process.env.DISABLE_DOC_RAG === '1';
-    if (disabled) return taskInstructions;
-
-    const picks = await findRelevantDocsForTask({ taskDescription: taskInstructions, limit: 3 });
-    if (!picks || picks.length === 0) {
-        return taskInstructions;
-    }
-
-    const fileList = picks.map(f => `./docs/${f}`).join(', ');
-    const hint = `Read these related docs before starting: ${fileList}`;
-    return `${taskInstructions}\n\n${hint}`;
+    // RAG functionality has been removed
+    return taskInstructions;
 }
 
 async function runClaude(prompt: string): Promise<void> {

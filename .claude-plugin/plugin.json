@@ -1,0 +1,8 @@
+{
+  "name": "flpipeline",
+  "description": "Task-based orchestrator for Claude Code with hint management and documentation search",
+  "version": "0.1.0",
+  "author": {
+    "name": "FacetLayer"
+  }
+}

@@ -13,9 +13,6 @@
   },
   "devDependencies": {
     "@facetlayer/candle": "^0.7.0",
-    "@facetlayer/sqlite-wrapper": "^0.9.1",
-    "@facetlayer/streams": "^1.0.0",
-    "@facetlayer/subprocess-wrapper": "^1.1.0",
     "@types/node": "24.1.0",
     "@types/yargs": "17.0.33",
     "esbuild": "0.25.9",
@@ -26,6 +23,10 @@
   "private": true,
   "dependencies": {
     "@anthropic-ai/sdk": "0.67.0",
+    "@facetlayer/sqlite-wrapper": "^0.9.1",
+    "@facetlayer/streams": "^1.0.0",
+    "@facetlayer/subprocess-wrapper": "^1.1.0",
+    "better-sqlite3": "^11.8.1",
     "glob": "11.0.3",
     "gray-matter": "4.0.3",
     "node-pty": "1.0.0",
