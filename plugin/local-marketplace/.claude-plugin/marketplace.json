@@ -1,0 +1,13 @@
+{
+  "name": "flpipeline-local",
+  "owner": {
+    "name": "FacetLayer"
+  },
+  "plugins": [
+    {
+      "name": "flpipeline",
+      "source": "../../",
+      "description": "Task-based orchestrator for Claude Code with hint management and documentation search"
+    }
+  ]
+}
