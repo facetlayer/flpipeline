@@ -39,10 +39,26 @@ export interface GetRelevantHintsOptions extends GetListingOptions {
 export class FoundHints {
   private hintNames: string[];
   private hintsDir: string;
+  private tokenUsage?: {
+    tokensUsed?: number;
+    inputTokens?: number;
+    outputTokens?: number;
+    model?: string;
+  };
 
-  constructor(hintNames: string[], hintsDir: string = join(PROJECT_ROOT_DIR, 'src/hints')) {
+  constructor(
+    hintNames: string[],
+    hintsDir: string = join(PROJECT_ROOT_DIR, 'src/hints'),
+    tokenUsage?: {
+      tokensUsed?: number;
+      inputTokens?: number;
+      outputTokens?: number;
+      model?: string;
+    }
+  ) {
     this.hintNames = hintNames;
     this.hintsDir = hintsDir;
+    this.tokenUsage = tokenUsage;
   }
 
   /**
@@ -100,6 +116,19 @@ export class FoundHints {
     return this.getAllHintContents()
       .map(({ name, content }) => `# ${name}\n\n${content}`)
       .join(separator);
+  }
+
+  /**
+   * Get the token usage information from the LLM call
+   * @returns Token usage information if available
+   */
+  getTokenUsage(): {
+    tokensUsed?: number;
+    inputTokens?: number;
+    outputTokens?: number;
+    model?: string;
+  } | undefined {
+    return this.tokenUsage;
   }
 }
 
@@ -184,8 +213,16 @@ Examples: ["hint-name-1", "hint-name-2"] or [] if none are relevant.`;
     const availableHintNames = hintInfos.map(info => info.name);
     const validHintNames = hintNames.filter(name => availableHintNames.includes(name));
 
+    // Extract token usage from response metadata
+    const tokenUsage = response.metadata ? {
+      tokensUsed: response.metadata.tokensUsed,
+      inputTokens: response.metadata.inputTokens,
+      outputTokens: response.metadata.outputTokens,
+      model: response.metadata.model,
+    } : undefined;
+
     // Return only valid hints, or empty if none found
-    return new FoundHints(validHintNames.slice(0, maxHints));
+    return new FoundHints(validHintNames.slice(0, maxHints), undefined, tokenUsage);
 
   } catch (error) {
     console.error('Error querying LLM for hint selection:', error);

@@ -3,6 +3,7 @@ import { getRelevantHints } from '../hint-db/getRelevantHints.js';
 import { getLocalConfigs } from '../config/getLocalConfigs.js';
 import { createLLMServiceFromConfig, getDefaultModelFromConfig } from '../config/createLLMServiceFromConfig.js';
 import { getHintPatterns } from '../hint-db/getHintPatterns.js';
+import { calculateTokenCost, formatCost } from '../hint-db/token-costs.js';
 
 export interface ShowHintsArgs {
   query: string;
@@ -87,6 +88,17 @@ export async function showHints(args: ShowHintsArgs): Promise<void> {
 
       } catch (error) {
         console.warn(`Warning: Could not parse hint ${name}:`, error);
+      }
+    }
+
+    // Display token usage information if available
+    const tokenUsage = foundHints.getTokenUsage();
+    if (tokenUsage) {
+      const cost = calculateTokenCost(tokenUsage.model, tokenUsage.inputTokens, tokenUsage.outputTokens);
+      if (cost !== null) {
+        console.log(`Token Usage: ${formatCost(cost)}`);
+      } else if (tokenUsage.tokensUsed !== undefined) {
+        console.log(`Token Usage: ${tokenUsage.tokensUsed.toLocaleString()} tokens`);
       }
     }
 
