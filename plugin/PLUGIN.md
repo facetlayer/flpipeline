@@ -188,6 +188,12 @@ flpipeline/
 │   ├── show-hints.md
 │   ├── index-docs.md
 │   └── search-docs.md
+├── plugin/                   # Plugin documentation
+│   ├── PLUGIN.md            # This file
+│   ├── TESTING_PLUGIN.md    # Testing guide
+│   └── local-marketplace/   # Local test marketplace
+│       └── .claude-plugin/
+│           └── marketplace.json
 ├── src/                      # CLI implementation
 │   ├── commands/            # Command implementations
 │   ├── hint-db/             # Hint database and search

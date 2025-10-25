@@ -48,13 +48,13 @@ Task-based orchestrator for Claude Code with hint management and documentation s
 
 ### As a Claude Code Plugin
 
-See [PLUGIN.md](./PLUGIN.md) for detailed plugin installation and usage instructions.
+See [plugin/PLUGIN.md](./plugin/PLUGIN.md) for detailed plugin installation and usage instructions.
 
 Quick install:
 ```bash
 claude
-/plugin marketplace add /path/to/flpipeline-marketplace
-/plugin install flpipeline@flpipeline-marketplace
+/plugin marketplace add /path/to/flpipeline/plugin/local-marketplace
+/plugin install flpipeline@flpipeline-local
 ```
 
 Then use slash commands in Claude Code:
@@ -93,7 +93,8 @@ Create `.flpipeline.json` in your project root:
 
 ## Documentation
 
-- [Plugin Setup Guide](./PLUGIN.md) - How to use as a Claude Code plugin
+- [Plugin Setup Guide](./plugin/PLUGIN.md) - How to use as a Claude Code plugin
+- [Plugin Testing Guide](./plugin/TESTING_PLUGIN.md) - Local testing instructions
 - [Configuration Guide](./.flpipeline.json.example) - Example configuration file
 
 ## Development
